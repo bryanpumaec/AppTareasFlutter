@@ -48,10 +48,11 @@ class _TaskListScreenState extends State<TaskListScreen> {
   void _showTaskInfo(Task task) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
+        duration: const Duration(seconds: 1),
         content: Text(
           'Tarea: ${task.title} • Fecha: ${task.formattedDate} • Prioridad: ${task.priority}',
         ),
-        backgroundColor: AppColors.uniandesBlue,
+        backgroundColor: Colors.lightGreen,
       ),
     );
   }
@@ -59,7 +60,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Tareas Uniandes')),
+      appBar: AppBar(title: const Text('Tareas Uniandes | Bryan Puma')),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _tasks.isEmpty
