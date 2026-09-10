@@ -12,16 +12,24 @@ class TaskFormScreen extends StatefulWidget {
 class _TaskFormScreenState extends State<TaskFormScreen> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
-  final _priorityController = TextEditingController();
 
   DateTime? _selectedDate;
   String? _dateError;
 
+  int? _selectedPriority;
+  String? _priorityError;
+
   @override
   void dispose() {
     _titleController.dispose();
-    _priorityController.dispose();
     super.dispose();
+  }
+
+  void _selectPriority(int value) {
+    setState(() {
+      _selectedPriority = value;
+      _priorityError = null;
+    });
   }
 
   Future<void> _pickDate() async {
@@ -45,19 +53,21 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
   void _submit() {
     final isFormValid = _formKey.currentState!.validate();
     final isDateValid = _selectedDate != null;
+    final isPriorityValid = _selectedPriority != null;
 
     setState(() {
       _dateError = isDateValid ? null : 'Selecciona una fecha límite';
+      _priorityError = isPriorityValid ? null : 'Selecciona una prioridad';
     });
 
-    if (!isFormValid || !isDateValid) {
+    if (!isFormValid || !isDateValid || !isPriorityValid) {
       return;
     }
 
     final newTask = Task(
       title: _titleController.text.trim(),
       dueDate: _selectedDate!,
-      priority: int.parse(_priorityController.text.trim()),
+      priority: _selectedPriority!,
     );
 
     Navigator.pop(context, newTask);
@@ -67,6 +77,23 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
     final day = date.day.toString().padLeft(2, '0');
     final month = date.month.toString().padLeft(2, '0');
     return '$day/$month/${date.year}';
+  }
+
+  Widget _buildPriorityButton(int value) {
+    final isSelected = _selectedPriority == value;
+    return GestureDetector(
+      onTap: () => _selectPriority(value),
+      child: CircleAvatar(
+        radius: 24,
+        backgroundColor:
+            isSelected ? AppColors.uniandesBlue : Colors.grey[300],
+        foregroundColor: isSelected ? Colors.white : AppColors.uniandesBlue,
+        child: Text(
+          '$value',
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+      ),
+    );
   }
 
   @override
@@ -129,27 +156,28 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
                   ),
                 ),
               const SizedBox(height: 20),
-              TextFormField(
-                controller: _priorityController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Prioridad (1 a 5)',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'La prioridad es obligatoria';
-                  }
-                  final parsed = int.tryParse(value.trim());
-                  if (parsed == null) {
-                    return 'Ingresa un número entero válido';
-                  }
-                  if (parsed < 1 || parsed > 5) {
-                    return 'La prioridad debe estar entre 1 y 5';
-                  }
-                  return null;
-                },
+              Text(
+                'Prioridad (1 a 5)',
+                style: Theme.of(context).textTheme.bodyLarge,
               ),
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [1, 2, 3, 4, 5]
+                    .map((value) => _buildPriorityButton(value))
+                    .toList(),
+              ),
+              if (_priorityError != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: Text(
+                    _priorityError!,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
               const SizedBox(height: 32),
               SizedBox(
                 width: double.infinity,
