@@ -14,11 +14,27 @@ class TaskListScreen extends StatefulWidget {
 class _TaskListScreenState extends State<TaskListScreen> {
   final List<Task> _tasks = [];
   bool _isLoading = true;
+  bool _sortAscending = true;
 
   @override
   void initState() {
     super.initState();
     _loadTasks();
+  }
+
+  void _sortTasks() {
+    _tasks.sort(
+      (a, b) => _sortAscending
+          ? a.dueDate.compareTo(b.dueDate)
+          : b.dueDate.compareTo(a.dueDate),
+    );
+  }
+
+  void _toggleSortOrder() {
+    setState(() {
+      _sortAscending = !_sortAscending;
+      _sortTasks();
+    });
   }
 
   Future<void> _loadTasks() async {
@@ -27,6 +43,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
       _tasks
         ..clear()
         ..addAll(tasks);
+      _sortTasks();
       _isLoading = false;
     });
   }
@@ -40,7 +57,8 @@ class _TaskListScreenState extends State<TaskListScreen> {
     if (newTask != null) {
       final savedTask = await TaskDatabase.instance.insertTask(newTask);
       setState(() {
-        _tasks.insert(0, savedTask);
+        _tasks.add(savedTask);
+        _sortTasks();
       });
     }
   }
@@ -60,7 +78,20 @@ class _TaskListScreenState extends State<TaskListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Tareas Uniandes | Bryan Puma')),
+      appBar: AppBar(
+        title: const Text('Tareas Uniandes | Bryan Puma'),
+        actions: [
+          IconButton(
+            icon: Icon(
+              _sortAscending ? Icons.arrow_upward : Icons.arrow_downward,
+            ),
+            tooltip: _sortAscending
+                ? 'Orden ascendente por fecha'
+                : 'Orden descendente por fecha',
+            onPressed: _toggleSortOrder,
+          ),
+        ],
+      ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _tasks.isEmpty
