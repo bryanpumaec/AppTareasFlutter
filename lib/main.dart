@@ -1,6 +1,7 @@
 // Tareas Uniandes
 // Autor: Bryan Puma
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'screens/task_list_screen.dart';
 import 'theme/app_colors.dart';
 
@@ -16,6 +17,15 @@ class TareasUniandesApp extends StatelessWidget {
     return MaterialApp(
       title: 'Tareas Uniandes',
       debugShowCheckedModeBanner: false,
+      locale: const Locale('es'),
+      supportedLocales: const [
+        Locale('es'),
+      ],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: AppColors.uniandesBlue),

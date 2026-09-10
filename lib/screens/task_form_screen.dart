@@ -31,6 +31,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
       initialDate: _selectedDate ?? now,
       firstDate: DateTime(now.year - 1),
       lastDate: DateTime(now.year + 5),
+      locale: const Locale('es'),
     );
 
     if (pickedDate != null) {
