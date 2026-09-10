@@ -60,9 +60,12 @@ class _TaskListScreenState extends State<TaskListScreen> {
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   child: ListTile(
                     leading: CircleAvatar(
-                      backgroundColor: AppColors.uniandesYellow,
-                      foregroundColor: AppColors.uniandesBlue,
-                      child: Text('${task.priority}'),
+                      backgroundColor: AppColors.priorityColor(task.priority),
+                      foregroundColor: Colors.white,
+                      child: Text(
+                        '${task.priority}',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ),
                     title: Text(task.title),
                     subtitle: Text(
